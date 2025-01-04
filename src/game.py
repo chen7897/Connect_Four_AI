@@ -128,4 +128,7 @@ if __name__ == "__main__":
 
 #ideas to continute -
     # add a restart button
-    # instead of exiting when a player wins and printing it on the terminal, make a pop up window that says who won with ok button to exit.   
+    # instead of exiting when a player wins and printing it on the terminal, make a pop up window that says who won with ok button to exit.  
+    # add a motion to the pieces when they are dropped
+    # add a home screen with a start button and instruction how to reset the game
+    # make the circle not go out of bounds when the mouse is moved to the edge of the screen
