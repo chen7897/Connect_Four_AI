@@ -17,7 +17,6 @@ This is a Connect Four game with AI implementation. Players can compete against 
 3. Install dependencies:
    ```
    pip install -r requirements.txt
-
    ```
 
 ## Usage
