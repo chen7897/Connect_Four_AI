@@ -2,7 +2,7 @@
 # Connect Four AI
 Chen Sabag
 ## Description
-This is a Connect Four game where the player can play against an AI. The AI will use different algorithms (Minimax, Genetic Algorithm, etc.) to play the game and improve over time.
+This is a Connect Four game with AI implementation. Players can compete against each other or against an AI. The project is built using Python and Pygame.
 
 ## Installation
 1. Clone the repository: `git clone https://github.com/chen7897/Connect_Four_AI`
@@ -13,7 +13,8 @@ This is a Connect Four game where the player can play against an AI. The AI will
    ```
 3. Install dependencies:
    ```
-   pip install pygame numpy matplotlib
+   pip install -r requirements.txt
+
    ```
 
 ## Usage
