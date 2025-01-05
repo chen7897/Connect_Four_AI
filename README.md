@@ -5,8 +5,7 @@ Chen Sabag
 This is a Connect Four game with AI implementation. Players can compete against each other or against an AI. The project is built using Python and Pygame.
 
 ## Installation
-1. Clone the repository:
-   ```
+1. ```
    git clone https://github.com/chen7897/Connect_Four_AI
    ```
 2. Set up a virtual environment:
