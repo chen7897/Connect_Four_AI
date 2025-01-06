@@ -6,11 +6,32 @@ This is a Connect Four game with AI implementation. Players can compete against 
 
 The game is played on a grid of 6x7 slots that start blank, and can be filled with red or yellow discs.
 <p align="center">
-  <img src="docs/empty_board.png" alt="Home Screen" width="200">
+  <img src="docs/empty_board.png" alt="Home Screen" width="300">
 </p>
 
+The goal is to connect 4 discs of the same color, before the second player manages to do so. <br> There are 4 different legal ways to do it: <br> <br>
+Horizontally - 
+<p align="center">
+  <img src="docs/horizontal_win.png" alt="Home Screen" width="300">
+</p>
+<br> <br>
+Vertically - 
+<p align="center">
+  <img src="docs/vertical_win.png" alt="Home Screen" width="300">
+</p>
+<br> <br>
+Diagonally - 
+<p align="center">
+  <img src="docs/reg_diagonal_win.png" alt="Home Screen" width="300">
+</p>
+<br> <br>
+Or reversed diagonally - 
+<p align="center">
+  <img src="docs/reverse_diagonal_win.png" alt="Home Screen" width="300">
+</p>
+<br> <br>
 
-
+each one of those sequences of dics will result in a victory and the end of the game.
 
 ## Installation
 1. Clone the repository:
