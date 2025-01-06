@@ -169,7 +169,7 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and not game.check_win():
                 posx = event.pos[0]
                 col = int(posx // SQUARESIZE)
                 game.drop_piece(col)  # Drop the piece in the correct column
@@ -177,7 +177,7 @@ def main():
 
                 # Check for win condition
                 if game.check_win():
-                    time.sleep(0.15)
+                    time.sleep(3)
                     print(f"Player {2 if game.turn else 1} wins!")
                     winner_screen(2 if game.turn else 1)
             if event.type == pygame.KEYDOWN:
