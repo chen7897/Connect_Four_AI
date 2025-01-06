@@ -5,6 +5,11 @@ Chen Sabag
 This is a Connect Four game with AI implementation. Players can compete against each other or against an AI. The project is built using Python and Pygame.
 
 The game is played on a grid of 6x7 slots that start blank, and can be filled with red or yellow discs.
+<p align="center">
+  <img src="docs/empty_board.png" alt="Home Screen" width="200">
+</p>
+
+
 
 
 ## Installation
