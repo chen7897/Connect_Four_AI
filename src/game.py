@@ -1,5 +1,7 @@
+import time
 import pygame
 import sys
+import os
 
 class ConnectFour:
     def __init__(self):
@@ -62,11 +64,66 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 WHITE = (240, 240, 240)
 LIGHTBLUE = (173, 216, 230)
-OFFWHITE = (230, 230, 230)  
+OFFWHITE = (230, 230, 230)
+
+# Button dimensions
+BUTTON_X = 254.4
+BUTTON_Y = 541
+BUTTON_WIDTH = 191.2
+BUTTON_HEIGHT = 67.3
     
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Connect Four")
+
+
+def draw_home_screen():
+    # Load the background image
+    docs_folder = os.path.join(os.path.dirname(__file__), "../docs")
+    background_image_path = os.path.join(docs_folder, "home_screen.jpg")
+    background = pygame.image.load(background_image_path)
+    background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+    # Draw the background
+    screen.blit(background, (0, 0))
+    pygame.display.update()
+
+    # Wait for user to click the button
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = event.pos
+                if (BUTTON_X <= mouse_x <= BUTTON_X + BUTTON_WIDTH) and \
+                   (BUTTON_Y <= mouse_y <= BUTTON_Y + BUTTON_HEIGHT):
+                    fade_to_black(background)  # Fade out the home screen
+                    return  # Exit the function to start the game
+                
+
+def fade_to_black(image):
+    fade_surface = pygame.Surface((WIDTH, HEIGHT))
+    for alpha in range(0, 256, 5):  # Gradually increase alpha from 0 to 255
+        fade_surface.set_alpha(alpha)  # Set the transparency level
+        screen.blit(image, (0, 0))  # Redraw the current image
+        screen.blit(fade_surface, (0, 0))  # Draw the fade overlay
+        pygame.display.update()
+        pygame.time.delay(7)  # Control the speed of the fade effect
+
+def winner_screen(winner):
+    screen.fill(BLACK)
+    font = pygame.font.SysFont("monospace", 50)
+    message = font.render(f"Player {winner} Wins!", True, RED if winner == 1 else YELLOW)
+    screen.blit(message, (WIDTH // 5, HEIGHT // 4))
+    
+    # Instructions to restart or quit
+    instructions = font.render("Press R to Restart", True, WHITE)
+    screen.blit(instructions, (WIDTH // 8, HEIGHT // 2))
+    instructions2 = font.render("Press Q to Quit", True, WHITE)
+    screen.blit(instructions2, (WIDTH // 8, HEIGHT // 2 + 150))
+    pygame.display.update()
+
 
 def initialize_board(game):
     # Draw the empty board
@@ -84,12 +141,14 @@ def draw_board(game):
                 pygame.draw.circle(screen, RED, (c * SQUARESIZE + SQUARESIZE // 2, (5 - r) * SQUARESIZE + SQUARESIZE + SQUARESIZE // 2), RADIUS)
             elif game.board[r][c] == 2:
                 pygame.draw.circle(screen, YELLOW, (c * SQUARESIZE + SQUARESIZE // 2, (5 - r) * SQUARESIZE + SQUARESIZE + SQUARESIZE // 2), RADIUS)
+            else:
+                pygame.draw.circle(screen, OFFWHITE, (c * SQUARESIZE + SQUARESIZE // 2, (5 - r) * SQUARESIZE + SQUARESIZE + SQUARESIZE // 2), RADIUS)    
 
     pygame.display.update()
 
 def draw_top_bar(game):
     pygame.draw.rect(screen, WHITE, (0, 0, WIDTH, SQUARESIZE))  # Clear the top bar
-    posx = pygame.mouse.get_pos()[0]  # Get current mouse position
+    posx = max(RADIUS, min(WIDTH - RADIUS, pygame.mouse.get_pos()[0]))
     if game.turn:
         pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)  # Player 2's piece
     else:
@@ -99,6 +158,7 @@ def draw_top_bar(game):
 
 
 def main():
+    draw_home_screen()
     game = ConnectFour()
     draw_board(game)
     initialize_board(game)
@@ -117,18 +177,23 @@ def main():
 
                 # Check for win condition
                 if game.check_win():
+                    time.sleep(0.15)
                     print(f"Player {2 if game.turn else 1} wins!")
-                    game.game_over = True
-        draw_top_bar(game)
-
-
+                    winner_screen(2 if game.turn else 1)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:  # Press 'R' to restart
+                    game.__init__()
+                    initialize_board(game)
+                elif event.key == pygame.K_q:  # Press 'Q' to quit
+                    pygame.quit()
+                    sys.exit()
+        if not game.check_win():
+            draw_top_bar(game)
+        
 if __name__ == "__main__":
     main()
 
 
 #ideas to continute -
-    # add a restart button
-    # instead of exiting when a player wins and printing it on the terminal, make a pop up window that says who won with ok button to exit.  
     # add a motion to the pieces when they are dropped
-    # add a home screen with a start button and instruction how to reset the game
-    # make the circle not go out of bounds when the mouse is moved to the edge of the screen
+
