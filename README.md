@@ -20,18 +20,25 @@ Vertically -
   <img src="docs/vertical_win.png" alt="Home Screen" width="300">
 </p>
 <br> <br>
-Diagonally - 
+Positive diagonally - 
 <p align="center">
   <img src="docs/reg_diagonal_win.png" alt="Home Screen" width="300">
 </p>
 <br> <br>
-Or reversed diagonally - 
+Or negative diagonally - 
 <p align="center">
   <img src="docs/reverse_diagonal_win.png" alt="Home Screen" width="300">
 </p>
 <br> <br>
 
-each one of those sequences of dics will result in a victory and the end of the game.
+Each one of those sequences of discs will result in a victory and the end of the game.
+<br>
+In my project i built an ai player to play the game against a player or another ai player, in order to check how well different ai models perform in this challenge.
+
+## The Problem
+My goal is to create a smart AI which will perform as a "very hard" difficulty.
+
+
 
 ## Installation
 1. Clone the repository:
