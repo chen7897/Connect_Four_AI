@@ -242,7 +242,7 @@ while not game_over:
                 drop_piece(board, row, col, PLAYER)  # Drop the piece in the correct column
                 draw_board(board)  # Redraw the game board
                 if check_win(board): # Check for win condition
-                    pygame.time.wait(400)
+                    pygame.time.wait(500)
                     print("Player wins!")
                     winner_screen("Player")
                 turn += 1
@@ -264,7 +264,7 @@ while not game_over:
                 draw_board(board)  # Redraw the game board
                 
                 if check_win(board):  # Check for win condition
-                    pygame.time.wait(400)
+                    pygame.time.wait(500)
                     print("AI wins!")
                     winner_screen("AI")    
                 turn += 1
