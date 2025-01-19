@@ -20,6 +20,7 @@ LIGHTBLUE = (173, 216, 230)
 OFFWHITE = (230, 230, 230)
 PLAYER = 1
 AI = 2
+END = False
 
 # Button dimensions
 BUTTON_X = 254.4
@@ -37,29 +38,48 @@ def is_valid_location(board, col):
 def get_next_available_row(board, col):
     for r in range(ROW_COUNT):  
         if board[r][col] == 0: 
-            return r        
+            return r  
 
-def check_win(board):
+# def is_winning_move(board, row, col, piece):
+#     # Check if placing a piece at (row, col) results in a win
+#     return check_directions(board, row, col, piece)
+
+def find_winning_move(board, piece):
+    # Loop through all valid locations to find a winning move
+    valid_locations = get_valid_locations(board)
+    
+    for col in valid_locations:
+        row = get_next_available_row(board, col)
+        copy_board = board.copy()
+        drop_piece(copy_board, row, col, piece)
+        
+        if check_win(copy_board, piece):
+            return col  # Return the column where AI can win
+
+    return None  # No winning move found
+
+
+def check_win(board, piece):
     # Check for horizontal, vertical, and diagonal wins
     for r in range(ROW_COUNT):
         for c in range(COLUMN_COUNT):
             if board[r][c] != 0:
-                if check_directions(board, r, c):
+                if check_directions(board, r, c, piece):
                     return True
     return False
 
-def check_directions(board, row, col):
+def check_directions(board, row, col, piece):
     directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
     for dr, dc in directions:
-        if check_line(board, row, col, dr, dc):
+        if check_line(board, row, col, dr, dc, piece):
             return True
     return False
 
-def check_line(board, row, col, dr, dc):
-    player = board[row][col]
-    for i in range(1, 4):
+def check_line(board, row, col, dr, dc, piece):
+    #player = board[row][col]
+    for i in range(4):
         r, c = row + i * dr, col + i * dc
-        if r < 0 or r >= ROW_COUNT or c < 0 or c >= COLUMN_COUNT or board[r][c] != player:
+        if r < 0 or r >= ROW_COUNT or c < 0 or c >= COLUMN_COUNT or board[r][c] != piece:
             return False
     return True
 
@@ -146,20 +166,22 @@ def draw_top_bar():
         pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)  # AI's piece
     pygame.display.update()  
 
-def window_eval(connect, piece):
-    score = 0 
-    opp_piece = PLAYER
-    if piece == PLAYER:
-        opp_piece = AI
-    if connect.count(piece) == 4:
-        score += 100 #winning move
-    elif connect.count(piece) == 3 and connect.count(0) == 1:
-        score += 10 #3 in a row
-    elif connect.count(piece) == 2 and connect.count(0) == 2:
-        score += 5 #2 in a row
-    if connect.count(opp_piece) == 3 and connect.count(0) == 1:
-        score -= 50 #block opponent
-    return score
+def connect_eval(connect, piece):
+    opp_piece = PLAYER if piece == AI else AI
+    piece_count = connect.count(piece)
+    empty_count = connect.count(0)
+    opp_count = connect.count(opp_piece)
+    
+    if piece_count == 4:
+        return 100
+    elif piece_count == 3 and empty_count == 1:
+        return 5
+    elif piece_count == 2 and empty_count == 2:
+        return 2
+    elif opp_count == 3 and empty_count == 1:
+        return -4
+    return 0
+
 
 def score_position(board, piece):
     score = 0
@@ -174,67 +196,73 @@ def score_position(board, piece):
         row_array = [int(i) for i in list(board[r, :])]
         for c in range(COLUMN_COUNT - 3):
             connect = row_array[c:c + 4]
-            score += window_eval(connect, piece)
+            score += connect_eval(connect, piece)
 
     #vertical
     for c in range(COLUMN_COUNT):
         col_array = [int(i) for i in list(board[:, c])]
         for r in range(ROW_COUNT - 3):
             connect = col_array[r:r + 4]
-            score += window_eval(connect, piece)
+            score += connect_eval(connect, piece)
 
     #positive diagonal
     for r in range(ROW_COUNT - 3):
         for c in range(COLUMN_COUNT - 3):
             connect = [board[r + i][c + i] for i in range(4)]
-            score += window_eval(connect, piece)  
+            score += connect_eval(connect, piece)  
 
     #negative diagonal
     for r in range(ROW_COUNT - 3):
         for c in range(COLUMN_COUNT - 3):
             connect = [board[r + 3 - i][c + i] for i in range(4)]
-            score += window_eval(connect, piece)
+            score += connect_eval(connect, piece)
 
     return score
 
 def terminal_node(board):
-    return check_win(board) or len(get_valid_locations(board)) == 0
+    return check_win(board, PLAYER) or check_win(board, AI) or len(get_valid_locations(board)) == 0
 
-def minimax(board, depth, maxmizingPlayer):
+def minimax(board, depth, alpha, beta, maximizingPlayer):
     valid_locations = get_valid_locations(board)
     if depth == 0 or terminal_node(board):
         if terminal_node(board):
-            if check_win(board) and turn == AI:
-                return (None, 100000000000000)
-            elif check_win(board) and turn == PLAYER:
-                return (None, -100000000000000)
+            if check_win(board, AI):
+                return (None, 10000)
+            elif check_win(board, PLAYER):
+                return (None, -10000)
             else:
                 return (None, 0) #game is over
         else:
             return (None, score_position(board, AI))  
-    if maxmizingPlayer:
+    if maximizingPlayer:
         column = random.choice(valid_locations)
-        value = math.inf * -1
+        value = float('-inf')
         for col in valid_locations:
             row = get_next_available_row(board, col)
             copy_board = board.copy()
             drop_piece(copy_board, row, col, AI)
-            new_score = minimax(copy_board, depth - 1, False)[1]
+            new_score = minimax(copy_board, depth - 1, alpha, beta, False)[1]
             if new_score > value:
                 value = new_score
                 column = col
+            alpha = max(alpha, value)
+            if alpha >= beta:
+                break
         return column, value
     else:
         column = random.choice(valid_locations)
-        value = math.inf
+        value = float('inf')
         for col in valid_locations:
             row = get_next_available_row(board, col)
             copy_board = board.copy()
             drop_piece(copy_board, row, col, PLAYER)
-            new_score = minimax(copy_board, depth - 1, True)[1]
+            new_score = minimax(copy_board, depth - 1, alpha, beta, True)[1]
             if new_score < value:
                 value = new_score
                 column = col
+            beta = min(beta, value)
+            if alpha >= beta:
+                break    
         return column, value
 
 def best_move_trivial(board, piece):
@@ -265,6 +293,8 @@ pygame.init()
 pygame.display.set_caption("Connect Four")
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 board , turn = initialize_board()
+#print(f"Board type: {type(board)}, Board shape: {board.shape}")
+#print(board)
 draw_home_screen()
 draw_board(board)
 
@@ -275,47 +305,60 @@ while not game_over:
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN and not check_win(board) and turn == PLAYER:
+        if event.type == pygame.MOUSEBUTTONDOWN and not END:
             posx = event.pos[0]
             col = int(posx // SQUARESIZE)
             if is_valid_location(board, col):
                 row = get_next_available_row(board, col)
                 drop_piece(board, row, col, PLAYER)  # Drop the piece in the correct column
                 draw_board(board)  # Redraw the game board
-                if check_win(board): # Check for win condition
+                if check_win(board, PLAYER): # Check for win condition
                     pygame.time.wait(500)
                     print("Player wins!")
                     winner_screen("Player")
+                    END = True
                 turn += 1
-                turn = (turn % 2) + 2     
+                #turn = (turn % 2) + 2     
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:  # Press 'R' to restart
+                END = False
                 board , turn = initialize_board()
             elif event.key == pygame.K_q:  # Press 'Q' to quit
                 pygame.quit()
                 sys.exit()
-        if turn == AI and not check_win(board):
-            # col = random.randint(0, COLUMN_COUNT - 1)
+        if turn == AI and not game_over:
+            #col = random.randint(0, COLUMN_COUNT - 1)
             #col = best_move_trivial(board, AI)
-            col, minimax_score = minimax(board, 3, True)
+            winning_move = find_winning_move(board, AI)
+            if winning_move is not None:
+                col = winning_move
+            else:    
+                col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
+            #print(f"Column type: {type(col)}, Column value: {col}")
             if is_valid_location(board, col):
-                pygame.time.wait(500)  # Wait for 0.5 seconds before dropping the piece
+                #pygame.time.wait(500)  # Wait for 0.5 seconds before dropping the piece
                 row = get_next_available_row(board, col)
                 drop_piece(board, row ,col, AI)  # Drop the piece in the correct column
                 draw_board(board)  # Redraw the game board
                 
-                if check_win(board):  # Check for win condition
-                    pygame.time.wait(500)
+                if check_win(board, AI):  # Check for win condition
+                    pygame.time.wait(1000)
                     print("AI wins!")
-                    winner_screen("AI")    
+                    winner_screen("AI")
+                    END = True    
                 turn += 1
                 turn = turn % 2  
 
-        if not check_win(board):
+        if not END:
             draw_top_bar()
 
 
 #ideas to continute -
-    # add a motion to the pieces when they are dropped
+    # add a code overview to the readme
+    # add a section where i explained why i implemnted the find_winning_move function
+    # ^^ it was because humans can make mistakes and not play optimally while minimax algorithm
+    # takes in considertaion that the human will play optimally, and when the human makes 
+    # a mistake, it messes up with the minimax algorithm and makes it behave abnormally
+    # so to counter that, i implemented the find_winning_move function to make the AI win whenever it has the chance
 

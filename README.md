@@ -38,7 +38,20 @@ In my project i built an ai player to play the game against a player or another 
 ## The Problem
 My goal is to create a smart AI which will perform as a "very hard" difficulty.
 
-
+## Development Journey: Improving the AI
+To develop a robust AI for Connect Four, I went through several stages of improvement:
+1. **Random Column Picker**:  
+   Initially, the AI simply chose a random column to drop its disc. While functional, this method had no strategy and frequently resulted in poor performance.
+2. **Best Move (Trivial)**:  
+   The next step was creating a `best_move_trivial` function. This function evaluated each column and selected the first column that would result in an immediate win. If no winning move was found, it would default to the first available column. While better than the random picker, this approach lacked foresight and often missed opportunities or fell into traps.
+ 3. **Minimax Algorithm**:  
+   To significantly enhance the AI, I implemented the Minimax algorithm, which evaluates game states by simulating all possible moves up to a specified depth. Its goal is to maximize the AI’s advantage while minimizing the opponent’s chances of success.  
+   - **Scoring System**: A scoring mechanism was developed to evaluate board configurations, assigning higher scores to favorable setups (e.g., those closer to a win) and prioritizing blocking the opponent’s winning moves.
+   - **Depth Limitation**: To manage computational costs, the algorithm was restricted to a fixed depth, balancing decision quality with performance.
+   - **Recursive Search**: Minimax uses a recursive search to explore game states, alternating between maximizing the AI’s position and minimizing the opponent’s advantage. <br> <br>
+   While Minimax significantly improved the AI’s gameplay, it faced a critical limitation: the exponential growth of computation time with increased depth. Though increasing the depth made the AI smarter by looking further ahead, it caused delays that disrupted the game's flow. This trade-off underscored the need for a more efficient approach, leading to the next enhancement: alpha-beta pruning. 
+  4. **Minimax with Alpha-beta pruning**
+        
 
 ## Installation
 1. Clone the repository:
