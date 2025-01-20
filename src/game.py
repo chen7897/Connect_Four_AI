@@ -14,7 +14,7 @@ RADIUS = int(SQUARESIZE / 2 - 7)
 BLUE = (44, 108, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
+YELLOW = (255, 220, 0)
 WHITE = (240, 240, 240)
 LIGHTBLUE = (173, 216, 230)
 OFFWHITE = (230, 230, 230)
@@ -28,8 +28,37 @@ BUTTON_Y = 541
 BUTTON_WIDTH = 191.2
 BUTTON_HEIGHT = 67.3
 
-def drop_piece(board ,row, col, piece):
+def drop_piece(board, row, col, piece):
+    """
+    Drops a piece into the board with a falling animation.
+    
+    Args:
+        board: The current game board state as a 2D list.
+        row: The final row index where the piece stops.
+        col: The column index where the piece is dropped.
+        piece: The piece to drop (PLAYER or AI).
+    """
+    # Animate the falling piece
+    x_pos = col * SQUARESIZE + SQUARESIZE // 2
+    for r in range(1,ROW_COUNT-1): # Iterate from the top to the target row
+        if board[ROW_COUNT-r][col] == 0:  # If the current row is empty
+            y_pos = r * SQUARESIZE + SQUARESIZE // 2
+            # Draw the falling piece
+            pygame.draw.circle(screen, RED if piece == PLAYER else YELLOW, (x_pos, y_pos), RADIUS)
+            pygame.display.update()
+            pygame.time.wait(100)  # Adjust timing for smoother animation
+            # Erase the previous piece (only if it's not the final position)
+            #if r != row:
+            pygame.draw.circle(screen, OFFWHITE, (x_pos, y_pos), RADIUS)
+
+    # Update the board state after animation
     board[row][col] = piece
+
+
+def copy_drop_piece(board, row, col, piece):
+    #Drops a piece into the board without a falling animation.
+    board[row][col] = piece    
+
     
     
 def is_valid_location(board, col):
@@ -51,7 +80,7 @@ def find_winning_move(board, piece):
     for col in valid_locations:
         row = get_next_available_row(board, col)
         copy_board = board.copy()
-        drop_piece(copy_board, row, col, piece)
+        copy_drop_piece(copy_board, row, col, piece)
         
         if check_win(copy_board, piece):
             return col  # Return the column where AI can win
@@ -240,7 +269,7 @@ def minimax(board, depth, alpha, beta, maximizingPlayer):
         for col in valid_locations:
             row = get_next_available_row(board, col)
             copy_board = board.copy()
-            drop_piece(copy_board, row, col, AI)
+            copy_drop_piece(copy_board, row, col, AI)
             new_score = minimax(copy_board, depth - 1, alpha, beta, False)[1]
             if new_score > value:
                 value = new_score
@@ -255,7 +284,7 @@ def minimax(board, depth, alpha, beta, maximizingPlayer):
         for col in valid_locations:
             row = get_next_available_row(board, col)
             copy_board = board.copy()
-            drop_piece(copy_board, row, col, PLAYER)
+            copy_drop_piece(copy_board, row, col, PLAYER)
             new_score = minimax(copy_board, depth - 1, alpha, beta, True)[1]
             if new_score < value:
                 value = new_score
@@ -272,7 +301,7 @@ def best_move_trivial(board, piece):
     for col in valid_locations:
         row = get_next_available_row(board, col)
         copy_board = board.copy()
-        drop_piece(copy_board, row, col, piece)
+        copy_drop_piece(copy_board, row, col, piece)
         score = score_position(copy_board, piece)
         if score > best_score:
             best_score = score
