@@ -29,16 +29,6 @@ BUTTON_WIDTH = 191.2
 BUTTON_HEIGHT = 67.3
 
 def drop_piece(board, row, col, piece):
-    """
-    Drops a piece into the board with a falling animation.
-    
-    Args:
-        board: The current game board state as a 2D list.
-        row: The final row index where the piece stops.
-        col: The column index where the piece is dropped.
-        piece: The piece to drop (PLAYER or AI).
-    """
-    # Animate the falling piece
     x_pos = col * SQUARESIZE + SQUARESIZE // 2
     for r in range(1,ROW_COUNT-1): # Iterate from the top to the target row
         if board[ROW_COUNT-r][col] == 0:  # If the current row is empty
@@ -47,20 +37,15 @@ def drop_piece(board, row, col, piece):
             pygame.draw.circle(screen, RED if piece == PLAYER else YELLOW, (x_pos, y_pos), RADIUS)
             pygame.display.update()
             pygame.time.wait(100)  # Adjust timing for smoother animation
-            # Erase the previous piece (only if it's not the final position)
-            #if r != row:
             pygame.draw.circle(screen, OFFWHITE, (x_pos, y_pos), RADIUS)
 
     # Update the board state after animation
     board[row][col] = piece
 
-
 def copy_drop_piece(board, row, col, piece):
     #Drops a piece into the board without a falling animation.
     board[row][col] = piece    
 
-    
-    
 def is_valid_location(board, col):
     return board[ROW_COUNT-1][col] == 0
 
@@ -68,10 +53,6 @@ def get_next_available_row(board, col):
     for r in range(ROW_COUNT):  
         if board[r][col] == 0: 
             return r  
-
-# def is_winning_move(board, row, col, piece):
-#     # Check if placing a piece at (row, col) results in a win
-#     return check_directions(board, row, col, piece)
 
 def find_winning_move(board, piece):
     # Loop through all valid locations to find a winning move
@@ -105,7 +86,6 @@ def check_directions(board, row, col, piece):
     return False
 
 def check_line(board, row, col, dr, dc, piece):
-    #player = board[row][col]
     for i in range(4):
         r, c = row + i * dr, col + i * dc
         if r < 0 or r >= ROW_COUNT or c < 0 or c >= COLUMN_COUNT or board[r][c] != piece:
@@ -306,9 +286,7 @@ def best_move_trivial(board, piece):
         if score > best_score:
             best_score = score
             best_col = col
-    return best_col        
-
-             
+    return best_col                  
 
 def get_valid_locations(board):
     valid_locations = []
@@ -322,10 +300,9 @@ pygame.init()
 pygame.display.set_caption("Connect Four")
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 board , turn = initialize_board()
-#print(f"Board type: {type(board)}, Board shape: {board.shape}")
-#print(board)
 draw_home_screen()
 draw_board(board)
+
 
 
 while not game_over:
@@ -334,7 +311,58 @@ while not game_over:
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN and not END:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:  # Press 'R' to restart
+                END = False
+                board , turn = initialize_board()
+            elif event.key == pygame.K_q:  # Press 'Q' to quit
+                pygame.quit()
+                sys.exit()
+            elif event.key == pygame.K_h: #simulate AI vs AI
+                while not END:
+                    if turn == PLAYER and not END:
+                        winning_move = find_winning_move(board, PLAYER)
+                        if winning_move is not None:
+                            col = winning_move
+                        else:   
+                            col, _ = minimax(board, 5, -math.inf, math.inf, True)
+                        if is_valid_location(board, col):
+                            #pygame.time.wait(500)  # An Optional delay for the player to see the move
+                            row = get_next_available_row(board, col)
+                            drop_piece(board, row ,col, PLAYER)  # Drop the piece in the correct column
+                            draw_board(board)  # Redraw the game board
+                            
+                            if check_win(board, PLAYER):  # Check for win condition
+                                pygame.time.wait(1000)
+                                print("Player wins!")
+                                winner_screen("Player")
+                                END = True  
+                            else:    
+                                turn = AI
+                    elif turn == AI and not END:
+                        #col = random.randint(0, COLUMN_COUNT - 1) # Random move
+                        #col = best_move_trivial(board, AI) # Trivial AI
+                        winning_move = find_winning_move(board, AI)
+                        if winning_move is not None:
+                            col = winning_move
+                        else:   
+                            col, _ = minimax(board, 5, -math.inf, math.inf, True)
+                        if is_valid_location(board, col):
+                            #pygame.time.wait(500)  # An Optional delay for the player to see the move
+                            row = get_next_available_row(board, col)
+                            drop_piece(board, row ,col, AI)  # Drop the piece in the correct column
+                            draw_board(board)  # Redraw the game board
+                            
+                            if check_win(board, AI):  # Check for win condition
+                                pygame.time.wait(1000)
+                                print("AI wins!")
+                                winner_screen("AI")
+                                END = True
+                            else:
+                                turn = PLAYER          
+           
+
+        if event.type == pygame.MOUSEBUTTONDOWN and not END: # Player's turn
             posx = event.pos[0]
             col = int(posx // SQUARESIZE)
             if is_valid_location(board, col):
@@ -346,27 +374,19 @@ while not game_over:
                     print("Player wins!")
                     winner_screen("Player")
                     END = True
-                turn += 1
-                #turn = (turn % 2) + 2     
+                else:
+                    turn = AI
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r:  # Press 'R' to restart
-                END = False
-                board , turn = initialize_board()
-            elif event.key == pygame.K_q:  # Press 'Q' to quit
-                pygame.quit()
-                sys.exit()
-        if turn == AI and not game_over:
-            #col = random.randint(0, COLUMN_COUNT - 1)
-            #col = best_move_trivial(board, AI)
-            winning_move = find_winning_move(board, AI)
+        elif turn == AI and not END: # AI's turn
+            #col = random.randint(0, COLUMN_COUNT - 1) # Random move
+            #col = best_move_trivial(board, AI) # Trivial AI
+            winning_move = find_winning_move(board, AI) # Find a winning move if it exists
             if winning_move is not None:
                 col = winning_move
-            else:    
-                col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
-            #print(f"Column type: {type(col)}, Column value: {col}")
+            else:   
+                col, _ = minimax(board, 5, -math.inf, math.inf, True)
             if is_valid_location(board, col):
-                #pygame.time.wait(500)  # Wait for 0.5 seconds before dropping the piece
+                #pygame.time.wait(500)  # An Optional delay for the player to see the move
                 row = get_next_available_row(board, col)
                 drop_piece(board, row ,col, AI)  # Drop the piece in the correct column
                 draw_board(board)  # Redraw the game board
@@ -375,12 +395,13 @@ while not game_over:
                     pygame.time.wait(1000)
                     print("AI wins!")
                     winner_screen("AI")
-                    END = True    
-                turn += 1
-                turn = turn % 2  
+                    END = True  
+                else:
+                    turn = PLAYER     
 
         if not END:
             draw_top_bar()
+
 
 
 #ideas to continute -
