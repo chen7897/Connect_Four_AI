@@ -4,7 +4,7 @@ Chen Sabag
 ## Description
 This is a Connect Four game with AI implementation. Players can compete against each other or against an AI. The project is built using Python and Pygame.
 
-The game is played on a grid of 6x7 slots that start blank, and can be filled with red or yellow discs.
+The game is played on a grid of 6x7 slots that starts blank, and can be filled with red or yellow discs.
 <p align="center">
   <img src="docs/empty_board.png" alt="Home Screen" width="300">
 </p>
@@ -33,7 +33,7 @@ Or negative diagonally -
 
 Each one of those sequences of discs will result in a victory and the end of the game.
 <br>
-In my project i built an ai player to play the game against a player or another ai player, in order to check how well different ai models perform in this challenge.
+In my project i built an AI player to play the game against a player or another ai player, in order to check how well different ai models perform in this challenge.
 
 ## The Problem
 My goal is to develop a smart AI capable of performing at a "very hard" difficulty level, while striking a balance between computational efficiency and the intelligence of its decision-making. This ensures the AI is both challenging and performant without causing noticeable delays.
@@ -79,8 +79,8 @@ Before defining the functions, I listed all the attributes and global variables 
     - `minimax` : The main algorithm function that contains the AI's decision-making logic. It looks *depth* steps ahead into the game, considers all possibilities, and uses the scoring mechanism to determine the optimal move for the current board state.
   - **Game logic related:**
     - `check_win` : Scans the board for four consecutive discs of the same color. It leverages helper functions (`check_directions` and `check_line`) to efficiently scan the board.
-  - **Gui related**
-    - `draw_home_screen` :Displays a home screen before the game starts. The home screen features a Connect-4 logo sourced from Google, which I extended using Photoshop's AI tool to fit the game's dimensions.
+  - **GUI related**
+    - `draw_home_screen` : Displays a home screen before the game starts. The home screen features a Connect-4 logo sourced from Google, which I extended using Photoshop's AI tool to fit the game's dimensions.
     - `fade_to_black` : Creates a fade effect when starting the game.
     - `winner_screen` : Displays a "game over" screen showing the winner and instructions on how to restart or quit the game.
 
