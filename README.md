@@ -87,7 +87,7 @@ Before defining the functions, I listed all the attributes and global variables 
 After defining the functions, the main game loop is implemented. It contains the event-handling mechanism for gameplay, including features such as AI vs. AI simulation, restart functionality, and quitting options.    
 
 ## Experiments: Minimax Depth Analysis
-  To evaluate the performance of different depths of the minimax algorithm, I ran 100 simulated games for depths 2 through 6 against a depth-1 opponent. <br>
+  To evaluate the performance of different depths of the minimax algorithm, I ran 100 simulated games for depths 2 through 6 against a depth-1 opponent, where the starting player was chosen at random. <br>
   Metrics:
   - **Win Rate:** The percentage of games won.
   - **Computation Time:** The average time spent by the AI per turn in a game.
