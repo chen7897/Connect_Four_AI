@@ -119,8 +119,8 @@ def draw_home_screen():
 
 def fade_to_black(image):
     fade_surface = pygame.Surface((WIDTH, HEIGHT))
-    for alpha in range(0, 256, 5):  # Gradually increase alpha from 0 to 255
-        fade_surface.set_alpha(alpha)  # Set the transparency level
+    for alpha in range(0, 256, 5): # Slowly increase the transparency
+        fade_surface.set_alpha(alpha)  
         screen.blit(image, (0, 0))  # Redraw the current image
         screen.blit(fade_surface, (0, 0))  # Draw the fade overlay
         pygame.display.update()
@@ -404,11 +404,4 @@ while not game_over:
 
 
 
-#ideas to continute -
-    # add a code overview to the readme
-    # add a section where i explained why i implemnted the find_winning_move function
-    # ^^ it was because humans can make mistakes and not play optimally while minimax algorithm
-    # takes in considertaion that the human will play optimally, and when the human makes 
-    # a mistake, it messes up with the minimax algorithm and makes it behave abnormally
-    # so to counter that, i implemented the find_winning_move function to make the AI win whenever it has the chance
 
