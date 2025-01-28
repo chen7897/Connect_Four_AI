@@ -68,7 +68,6 @@ def find_winning_move(board, piece):
 
     return None  # No winning move found
 
-
 def check_win(board, piece):
     # Check for horizontal, vertical, and diagonal wins
     for r in range(ROW_COUNT):
@@ -116,7 +115,6 @@ def draw_home_screen():
                     fade_to_black(background)  # Fade out the home screen
                     return  # Exit the function to start the game
                 
-
 def fade_to_black(image):
     fade_surface = pygame.Surface((WIDTH, HEIGHT))
     for alpha in range(0, 256, 5): # Slowly increase the transparency
@@ -138,7 +136,6 @@ def winner_screen(winner):
     instructions2 = font.render("Press Q to Quit", True, WHITE)
     screen.blit(instructions2, (WIDTH // 8, HEIGHT // 2 + 150))
     pygame.display.update()
-
 
 def initialize_board():
     # Draw the empty board
@@ -304,7 +301,6 @@ draw_home_screen()
 draw_board(board)
 
 
-
 while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -318,7 +314,7 @@ while not game_over:
             elif event.key == pygame.K_q:  # Press 'Q' to quit
                 pygame.quit()
                 sys.exit()
-            elif event.key == pygame.K_h: #simulate AI vs AI
+            elif event.key == pygame.K_h: # Simulate AI vs AI
                 while not END:
                     if turn == PLAYER and not END:
                         winning_move = find_winning_move(board, PLAYER)
